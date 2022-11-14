@@ -8,6 +8,7 @@ const notFound = require("./errors/notFound");
 
 //? Importing Controller / router 
 const moviesRouter = require("./movies/movies.router");
+const reviewsRouter = require("./reviews/reviews.router");
 
 //? Initializing
 const app = express();
@@ -16,6 +17,7 @@ app.use(express.json());
 
 //? Routes 
 app.use("/movies", moviesRouter);
+app.use("/reviews", reviewsRouter);
 
 //? Error Handlers 
 app.use(notFound);
