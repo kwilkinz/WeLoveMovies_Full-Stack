@@ -7,6 +7,7 @@ const lodash = require("lodash");
  * @returns {(function(*=): (*))|*}
  *  a function that accepts an object and when called will return a new object with the source properties mapped to the target properties as specified in the configuration.
  */
+
 function mapProperties(configuration) {
   return (data) => {
     if (data) {
