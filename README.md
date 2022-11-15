@@ -37,6 +37,12 @@ Follow the instructions below to get this project up and running on your own mac
   - [x] notFound
 - [x] Create Connection.js
 - [x] Create folder Movies
-  - [ ] movies.router.js (express)
-  - [ ] movies.controller.js (CRUD)
-  - [ ] movies.service.js (KNEX)
+
+  - [x] movies.router.js (express)
+  - [x] movies.controller.js (CRUD)
+  - [x] movies.service.js (KNEX)
+
+- [x] create folder reviews
+  - [] reviews.service.js
+  - [x] reviews.router.js
+  - [x] reviews.controller.js
