@@ -1,14 +1,13 @@
 const service = require("./reviews.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 
-//? list 
+//* LIST = list movies by Id 
 async function list(req, res) {
     const { movieId } = req.params;
-    const review = await service.listByMovieId(movieId);
-    res.json({ data: review })
+    res.json({ data: await service.listByMovieId(movieId ) });
 }
 
-//? reviewExists 
+//* READ = see if review exists in database 
 async function reviewExists(req, res, next) {
     const review = await service.read(req.params.reviewId);
     if (review) {
@@ -21,7 +20,7 @@ async function reviewExists(req, res, next) {
     });
 }
 
-//? validProperties to use 
+// validProperties to use 
 const validPropertiesRequired = ["score", "content"];
 function hasOnlyValidProperties(req, res, next) {
     const { data = {} } = req.body;
@@ -37,20 +36,20 @@ function hasOnlyValidProperties(req, res, next) {
     next();
 }
 
-//? Update 
+//* UPDATE = on reviewId 
 async function update(req, res) {
+    // const { reviewId } = req.params;
     const updateReview = {
         ...req.body.data,
         review_id: res.locals.review.review_id,
     };
-    const data = await service.update(updateReview);
-    res.json({ data });
+    res.json({ data: await service.update(updateReview) })
 }
 
-//? destroy 
+//* DELETE = on reviewId
 async function destroy(req, res) {
-    const { review } = res.locals;
-    await service.delete(review.review_id);
+    const { reviewId } = req.params;
+    await service.delete(reviewId);
     res.sendStatus(204);
 }
 

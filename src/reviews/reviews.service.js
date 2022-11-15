@@ -30,7 +30,7 @@ function destroy(reviewId) {
 }
 
 module.exports = {
-    list,
+    
     read,
     update,
     delete: destroy, 
