@@ -1,17 +1,37 @@
 const service = require("./reviews.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 
-//* LIST = list movies by Id 
-async function list(req, res) {
-    const { movieId } = req.params;
-    res.json({ data: await service.listByMovieId(movieId ) });
+//* UPDATE = on reviewId 
+async function update(req, res) {
+    const updateData = req.body.data;
+    const { reviewId } = req.params; 
+
+    const updatedReview = {
+        ...res.locals.review,
+        ...updateData,
+        review_id: reviewId
+    }
+    await service.update(updatedReview);
+    const data = await service.readUpdate(reviewId)
+    res.json({ data: data })
+  }
+
+//* DELETE = on reviewId
+//* deletes the review from the given reviewId
+async function destroy(req, res) {
+    const { reviewId } = req.params;
+    await service.delete(reviewId)
+    res.sendStatus(204);
 }
+
+
+// ------------------ middleware ------------------ // 
 
 //* READ = see if review exists in database 
 async function reviewExists(req, res, next) {
-    const review = await service.read(req.params.reviewId);
-    if (review) {
-        res.locals.review = review;
+    const data = await service.read(req.params.reviewId);
+    if (data) {
+        res.locals.review = data;
         return next();
     }
     next({
@@ -20,44 +40,11 @@ async function reviewExists(req, res, next) {
     });
 }
 
-// validProperties to use 
-const validPropertiesRequired = ["score", "content"];
-function hasOnlyValidProperties(req, res, next) {
-    const { data = {} } = req.body;
-    const invalidFields = Object.keys(data).filter((field) => 
-    !validPropertiesRequired.includes(field)
-    );
-    if (invalidFields.length) {
-        return next({
-            status: 400,
-            message: `Invalid field(s): ${invalidFields.join(", ")}`,
-        });
-    }
-    next();
-}
 
-//* UPDATE = on reviewId 
-async function update(req, res) {
-    // const { reviewId } = req.params;
-    const updateReview = {
-        ...req.body.data,
-        review_id: res.locals.review.review_id,
-    };
-    res.json({ data: await service.update(updateReview) })
-}
-
-//* DELETE = on reviewId
-async function destroy(req, res) {
-    const { reviewId } = req.params;
-    await service.delete(reviewId);
-    res.sendStatus(204);
-}
 
 module.exports = {
-    list: [asyncErrorBoundary(list)],
     update: [
-        asyncErrorBoundary(reviewExists),
-        hasOnlyValidProperties, 
+        asyncErrorBoundary(reviewExists), 
         asyncErrorBoundary(update),
     ],
     delete: [

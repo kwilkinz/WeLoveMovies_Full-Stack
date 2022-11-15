@@ -1,24 +1,43 @@
-//? Importing Service & Error Code
+// Importing Service & Error Code
 const service = require("./movies.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 
 //* LIST = all movies that are showing 
 async function list(req, res) {
-   const trueShowing = req.query.is_showing
+   const trueShowing = req.query.is_showing;
+   let data;
    if (trueShowing) {
-       res.json({ data: await service.listShowingMovies() });
+       data = await service.listShowingMovies();
    } else {
-       res.json({ data: await service.list() })
+       data = await service.list();
    }
+   res.json({ data: data })
 };
 
 
-//* READ = all Movies
+//* READ = all Movies, returns a movie from given MovieId
 async function read(req, res) {
-    const { movie } = res.locals.movie;
+    const { movie } = res.locals;
     res.json({ data: movie })
 }
 
+
+//* LIST = theater data, returns all theaters where movieId given
+async function listTheaters(req, res) {
+    const { movieId } = req.params;
+    const data = await service.listTheaters(movieId) ;
+    res.json({ data: data });
+}
+
+
+//* LIST = listReviews 
+async function listReviews(req, res) {
+    const { movieId } = req.params;
+    const data = await service.listReviews(movieId); 
+    res.json({ data: data });
+}
+
+// ------------------ middleware ------------------ // 
 
 //* READ = see if movie Exists in database
 async function moviesExist(req, res, next) {
@@ -33,21 +52,6 @@ async function moviesExist(req, res, next) {
         message: `Movie cannot be found.`
     })
 }
-
-
-//* LIST = theater data
-async function listTheaters(req, res) {
-    const { movieId } = req.params;
-    res.json({ data: await service.listTheaters(movieId) });
-}
-
-
-//* LIST = listReviews 
-async function listReviews(req, res) {
-    const { movieId } = req.params;
-    res.json({ data: await service.listReviews(movieId) });
-}
-
 
 
 module.exports = {

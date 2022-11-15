@@ -1,9 +1,16 @@
 const knex = require("../db/connection");
 
-//TODO:  Query attach review to critic 
+//* funciton that adds critic objects to the given review
+async function addCritic(review, criticId) {
+    review.critic = await knex("critics")
+        .select("*")
+        .where({ critic_id: criticId })
+        .first();
+        return review;
+}
 
-
-//?: Read  
+//* Query From: reviewExists()
+//* returns the review from the given reviewId
 function read(reviewId) {
     return knex("reviews")
         .select("*")
@@ -11,18 +18,25 @@ function read(reviewId) {
         .first();
 }
 
-//TODO: List movies > listByMovieId
-
-
-//? Update the review
-function update(updateReview) {
+//* Query From: updateReview()
+function update(updatedReview) {
     return knex("reviews")
-        .join("critics", "review_critic_id", "critics.critic_id")
-        .where({ review_id: updateReview.review_id })
-        .update(updateReview, "*");
+        .where({ "review_id": updatedReview.review_id })
+        .update(updatedReview, "*")
 }
 
-//? Delete the review based on the reviewId
+async function readUpdate(reviewId) {
+    return knex("reviews")
+        .select("*")
+        .where({ review_id: reviewId })
+        .first()
+        .then((review) => {
+            return addCritic(review, review.critic_id)
+        })
+}
+
+//* Query From: destroy()
+//* deletes the row from the given reviewId
 function destroy(reviewId) {
     return knex("reviews")
         .where({ review_id: reviewId })
@@ -30,8 +44,8 @@ function destroy(reviewId) {
 }
 
 module.exports = {
-    
     read,
     update,
+    readUpdate,
     delete: destroy, 
 };

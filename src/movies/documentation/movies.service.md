@@ -42,6 +42,9 @@ return knex("customers")
 // returns # of customers in each country
 ```
 
+**_.first()_**
+: returns the first value of the selected column.
+
 ---
 
 ## Queries Made:

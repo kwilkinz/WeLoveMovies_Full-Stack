@@ -1,11 +1,31 @@
-const router = require("express").Router();
-const controller = require("./theaters.controller");
-const methodNotAllowed = require("../errors/methodNotAllowed");
+const knex = require("../db/connection");
 
-//TODO: JOIN movies_theaters together by their ID's 
+//*Query FROM list() that lists all theaters
+//* uses the addMovies function to attach a movies array to each theater object
+async function list() {
+  return knex("theaters")
+    .select("*")
+    .then((theaters) => {
+      return Promise.all(
+        theaters.map((theater) => {
+          return addMovies(theater, theater.theater_id);
+        })
+      );
+    });
+}
 
-//TODO: List all the theaters
+// --------------- function Helper --------------- // 
+
+//* Query From: list
+//* function that attaches all movies to the given theater object
+async function addMovies(theater, theaterId) {
+  theater.movies = await knex("movies_theaters as mt")
+    .join("movies as m", "m.movie_id", "mt.movie_id")
+    .select("m.*")
+    .where({ "mt.theater_id": theaterId });
+  return theater;
+}
 
 module.exports = {
-   
+  list,
 };
