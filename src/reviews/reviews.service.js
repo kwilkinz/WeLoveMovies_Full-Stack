@@ -47,5 +47,5 @@ module.exports = {
     read,
     update,
     readUpdate,
-    delete: destroy, 
+    destroy, 
 };

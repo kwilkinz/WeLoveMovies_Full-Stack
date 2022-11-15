@@ -17,8 +17,8 @@ async function list(req, res) {
 
 //* READ = all Movies, returns a movie from given MovieId
 async function read(req, res) {
-    const { movie } = res.locals;
-    res.json({ data: movie })
+    const data = res.locals.movie;
+    res.json({ data: data})
 }
 
 
@@ -41,11 +41,10 @@ async function listReviews(req, res) {
 
 //* READ = see if movie Exists in database
 async function moviesExist(req, res, next) {
-    const { movieId } = req.params;
-    const movie = await service.read(movieId);
+    const movie = await service.read(req.params.movieId);
     if (movie) {
         res.locals.movie = movie; 
-        return next();
+        return next()
     }
     next({
         status: 404, 
@@ -58,12 +57,9 @@ module.exports = {
     list: [
         asyncErrorBoundary(list),
     ],
-    read: [
-        asyncErrorBoundary(moviesExist),
-        asyncErrorBoundary(read),
-    ],
-    listTheaters: [asyncErrorBoundary(listTheaters)],
-    listReviews: [asyncErrorBoundary(listReviews)],
+    read: [moviesExist, asyncErrorBoundary(read)],
+    listTheaters: [moviesExist, asyncErrorBoundary(listTheaters)],
+    listReviews: [moviesExist, asyncErrorBoundary(listReviews)],
 }
 
 // Controller is calling Service = i'll wait until you find the data i need then i will return back to the client

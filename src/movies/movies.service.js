@@ -51,7 +51,7 @@ async function addCritic(review, criticId) {
 }
 //* Query From: listReviews
 //* uses the addCritic to add critics to reviews
-function listReviews(movieId) {
+async function listReviews(movieId) {
    return knex("reviews")
         .select("*")
         .where({ "reviews.movie_id": movieId })
@@ -66,11 +66,9 @@ function listReviews(movieId) {
 
 
 module.exports = {
-    listShowingMovies,
     list,
+    listShowingMovies,
     read,
     listTheaters,
     listReviews,
 }
-
-// Querying through the database so service can return back material to controller.

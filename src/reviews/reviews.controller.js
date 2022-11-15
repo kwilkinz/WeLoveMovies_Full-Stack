@@ -18,9 +18,9 @@ async function update(req, res) {
 
 //* DELETE = on reviewId
 //* deletes the review from the given reviewId
-async function destroy(req, res) {
-    const { reviewId } = req.params;
-    await service.delete(reviewId)
+async function destroy(req, res, next) {
+    const reviewId = req.params.reviewId;
+    await service.destroy(reviewId)
     res.sendStatus(204);
 }
 
