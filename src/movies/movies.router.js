@@ -2,8 +2,8 @@ const router = require("express").Router({ mergeParams: true });
 const controller = require("./movies.controller");
 const methodNotAllowed = require("../errors/methodNotAllowed");
 
-//? Route to use movieId read to find the theaters 
-router.route("/:movieId/theaters/")
+// Route to use movieId read to find the theaters 
+router.route("/:movieId/theaters")
     .get(controller.listTheaters)
     .all(methodNotAllowed);
 

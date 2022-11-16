@@ -23,9 +23,8 @@ function list() {
 //* lists all the movies that are labled "is_showing" as true
 function listShowingMovies() {
     return knex("movies")
-        .join("movies_theaters as mt", 
-            "movies.movie_id", "mt.movie_id")
-        .select("movies.*", "mt.is_showing")
+        .join("movies_theaters", "movies.movie_id", "movies_theaters.movie_id")
+        .select("movies.*", "movies_theaters.is_showing")
         .groupBy("movies.movie_id")
         .where({ is_showing: true });
 }
@@ -36,27 +35,27 @@ function read(movieId) {
     return knex("movies")
         .select("*")
         .where({ movie_id: movieId })
-        .first()
+        .first();
 }
 
 //* Query From: listTheaters
 //* lists all theaters where given movie is playing
 function listTheaters(movie_id) {
-    return knex("theaters")
-        .join("movies_theaters as mt", "mt.theater_id", "theaters.theater_id")
-        .select("theater.*", "mt.movie_id", "mt.is_showing")
-        .where({ "mt.movie_id": movie_id })
-}
+    return knex("theaters as t")
+    .join("movies_theaters as mt", "mt.theater_id", "t.theater_id")
+    .select("t.*", "mt.movie_id", "mt.is_showing")
+    .where({ "mt.movie_id": movie_id });
+};
 
 
 //* Query From: listReviews
 //* uses the addCritic to add critics to reviews
 async function listReviews(movie_id) {
-   return knex("reviews")
-      .join("critics", "critics.critic_id", "reviews.critic_id")
-      .select("reviews.*", "critics.*")
-      .where({ "reviews.movie_id": movie_id })
-      .then((reviews) => reviews.map(review => addCritic(review)))
+    return knex("reviews as r")
+    .join("critics as c", "c.critic_id", "r.critic_id")
+    .select("r.*", "c.*")
+    .where({ "r.movie_id": movie_id })
+    .then(reviews => reviews.map(review => addCritic(review)));
 };
 
 
