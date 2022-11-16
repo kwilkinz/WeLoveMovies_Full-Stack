@@ -1,6 +1,7 @@
 const service = require("./movies.service");
-const boundary = require("../errors/asyncErrorBoundary");
+const asyncError = require("../errors/asyncErrorBoundary");
 
+// --------------- Middleware --------------- // 
 async function movieExists(req, res, next) {
   const { movieId } = req.params;
   const movie = await service.read(movieId);
@@ -10,7 +11,10 @@ async function movieExists(req, res, next) {
   }
   return next({ status: 404, message: `Movie cannot be found.` });
 }
+// --------------- ---------- --------------- // 
 
+//* first func() will display all movies currently playing in theaters. 
+//* Second func() will display all movies. 
 async function list(req, res, next) {
   const isShowing = req.query.is_showing;
   if (isShowing) {
@@ -20,26 +24,30 @@ async function list(req, res, next) {
   }
 }
 
-async function read(req, res, next) {
-  const movie = res.locals.movie;
-  res.json({ data: movie });
-}
-
+//* when clicking on a specific movieId this will show what theaters the 
+//* Movie are playing in. 
 async function listTheaters(req, res, next) {
   const { movieId } = req.params;
   const theaters = await service.listTheaters(movieId);
   res.json({ data: theaters });
 }
 
+//* Every movie comes with reviews this will show reviews based on the movieId. 
 async function listReviews(req, res, next) {
   const { movieId } = req.params;
   const reviews = await service.listReviews(movieId);
   res.json({ data: reviews });
 }
 
+//* Reading the movie data that list is retrieving. 
+async function read(req, res, next) {
+  const movie = res.locals.movie;
+  res.json({ data: movie });
+}
+
 module.exports = {
-  list: boundary(list),
-  read: [boundary(movieExists), read],
-  listTheaters: [boundary(movieExists), boundary(listTheaters)],
-  listReviews: [boundary(movieExists), boundary(listReviews)],
+  list: asyncError(list),
+  listTheaters: [asyncError(movieExists), asyncError(listTheaters)],
+  listReviews: [asyncError(movieExists), asyncError(listReviews)],
+  read: [asyncError(movieExists), read],
 };
