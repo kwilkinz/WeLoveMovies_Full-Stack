@@ -1,29 +1,24 @@
 const knex = require("../db/connection");
+const reduceProperties = require("../utils/reduce-properties");
+
+// --------------- Reduce Properties --------------- //
+const reduceMovies = reduceProperties("theater_id", {
+  movie_id: ["movies", null, "movie_id"],
+  title: ["movies", null, "title"],
+  runtime_in_minutes: ["movies", null, "runtime_in_minutes"],
+  rating: ["movies", null, "rating"],
+  description: ["movies", null, "description"],
+  image_url: ["movies", null, "image_url"],
+});
+//  --------------- --------------- ---------------  //
 
 //*Query FROM list() that lists all theaters
 //* uses the addMovies function to attach a movies array to each theater object
-async function list() {
+function list() {
   return knex("theaters")
-    .select("*")
-    .then((theaters) => {
-      return Promise.all(
-        theaters.map((theater) => {
-          return addMovies(theater, theater.theater_id);
-        })
-      );
-    });
-}
-
-// --------------- function Helper --------------- // 
-
-//* Query From: list
-//* function that attaches all movies to the given theater object
-async function addMovies(theater, theaterId) {
-  theater.movies = await knex("movies_theaters as mt")
-    .join("movies as m", "m.movie_id", "mt.movie_id")
-    .select("m.*")
-    .where({ "mt.theater_id": theaterId });
-  return theater;
+    .join("movies_theaters as mt", "mt.theater_id", "theaters.theater_id")
+    .join("movies", "movies.movie_id", "mt.movie_id")
+    .then(reduceMovies);
 }
 
 module.exports = {

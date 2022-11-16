@@ -1,48 +1,43 @@
 const service = require("./reviews.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 
-//* UPDATE = on reviewId 
-async function update(req, res) {
-    const updateData = req.body.data;
-    const { reviewId } = req.params; 
-
-    const updatedReview = {
-        ...res.locals.review,
-        ...updateData,
-        review_id: reviewId
-    }
-    await service.update(updatedReview);
-    const data = await service.readUpdate(reviewId)
-    res.json({ data: data })
-  }
-
-//* DELETE = on reviewId
-//* deletes the review from the given reviewId
-async function destroy(req, res, next) {
-    const reviewId = req.params.reviewId;
-    await service.destroy(reviewId)
-    res.sendStatus(204);
-}
-
-
 // ------------------ middleware ------------------ // 
 
 //* READ = see if review exists in database 
 async function reviewExists(req, res, next) {
-    const data = await service.read(req.params.reviewId);
-    if (data) {
-        res.locals.review = data;
+    const { reviewId } = req.params;
+    const review = await service.read(reviewId);
+    if (review) {
+        res.locals.review = review;
         return next();
     }
-    next({
-        status: 404,
-        message: `Review cannot be found.`
-    });
+    next({ status: 404, message: `Review cannot be found.` });
+}
+// ------------------ --------- ------------------ // 
+
+async function list(req, res) {
+    const data = await service.list();
+    res.json({ data });
+  }
+
+//* UPDATE = on reviewId 
+async function update(req, res) {
+    const { reviewId } = req.params;
+    await service.update(reviewId, req.body.data);
+    res.json({ data: await service.readUpdatedRecord(reviewId) });
+  }
+
+//* DELETE = on reviewId
+//* deletes the review from the given reviewId
+async function destroy(req, res) {
+    const { review } = res.locals;
+    await service.delete(review.review_id)
+    res.sendStatus(204);
 }
 
 
-
 module.exports = {
+    list: asyncErrorBoundary(list),
     update: [
         asyncErrorBoundary(reviewExists), 
         asyncErrorBoundary(update),
@@ -50,5 +45,5 @@ module.exports = {
     delete: [
         asyncErrorBoundary(reviewExists),
         asyncErrorBoundary(destroy),
-    ]
+    ],
 };

@@ -1,51 +1,56 @@
 const knex = require("../db/connection");
+const mapProperties = require("../utils/map-properties");
 
-//* funciton that adds critic objects to the given review
-async function addCritic(review, criticId) {
-    review.critic = await knex("critics")
-        .select("*")
-        .where({ critic_id: criticId })
-        .first();
-        return review;
-}
+// -------------- MAP PROPERTIES -------------- //
+const addCritic = mapProperties({
+  critic_id: "critic.critic_id",
+  preferred_name: "critic.preferred_name",
+  surname: "critic.surname",
+  organization_name: "critic.organization_name",
+});
+// -------------- -------------- -------------- //
 
-//* Query From: reviewExists()
-//* returns the review from the given reviewId
-function read(reviewId) {
-    return knex("reviews")
-        .select("*")
-        .where({ review_id: reviewId})
-        .first();
-}
-
-//* Query From: updateReview()
-function update(updatedReview) {
-    return knex("reviews")
-        .where({ "review_id": updatedReview.review_id })
-        .update(updatedReview, "*")
-}
-
-async function readUpdate(reviewId) {
-    return knex("reviews")
-        .select("*")
-        .where({ review_id: reviewId })
-        .first()
-        .then((review) => {
-            return addCritic(review, review.critic_id)
-        })
+function list() {
+  return knex("reviews").select("*");
 }
 
 //* Query From: destroy()
 //* deletes the row from the given reviewId
-function destroy(reviewId) {
-    return knex("reviews")
-        .where({ review_id: reviewId })
-        .del();
+function destroy(review_id) {
+  return knex("reviews").where({ review_id }).del();
+}
+
+//* Query From: updateReview()
+function update(reviewId, updatedReview) {
+  return knex("reviews")
+    .select("*")
+    .where({ review_id: reviewId })
+    .update(updatedReview, "*");
+}
+
+function readUpdatedRecord(reviewId) {
+  return knex("reviews")
+    .join("critics", "reviews.critic_id", "critics.critic_id")
+    .select("*")
+    .where({ review_id: reviewId })
+    .first()
+    .then((comment) => {
+      const updatedRecord = addCritic(comment);
+      updatedRecord.critic_id = updatedRecord.critic.critic_id;
+      return updatedRecord;
+    });
+}
+
+//* Query From: reviewExists()
+//* returns the review from the given reviewId
+function read(review_id) {
+  return knex("reviews").select("*").where({ review_id: review_id }).first();
 }
 
 module.exports = {
-    read,
-    update,
-    readUpdate,
-    destroy, 
+  list,
+  delete: destroy,
+  update,
+  readUpdatedRecord,
+  read,
 };
