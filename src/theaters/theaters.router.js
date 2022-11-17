@@ -1,8 +1,8 @@
-const router = require("express").Router({ mergeParams: true });
+const router = require("express").Router();
 const controller = require("./theaters.controller");
 const methodNotAllowed = require("../errors/methodNotAllowed");
 
-//* List theaters 
+// List theaters 
 router.route("/")
     .get(controller.list)
     .all(methodNotAllowed);

@@ -12,8 +12,9 @@ const reduceMovies = reduceProperties("theater_id", {
 });
 //  --------------- --------------- ---------------  //
 
-//*Query FROM list() that lists all theaters
-//* uses the addMovies function to attach a movies array to each theater object
+//*Query - that lists all theaters
+//* uses the reduceMovies to create another function that will combine data 
+//* from the SQL and format it properly. 
 function list() {
   return knex("theaters")
     .join("movies_theaters as mt", "mt.theater_id", "theaters.theater_id")
