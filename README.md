@@ -1,61 +1,48 @@
-# We Love Movies
+## We Love Movies Application
 
-## Live Website
+This application is designed for users to gain access to data about movies, theaters, and reviews.
 
-A live version of WeLoveMovies Application is able to be accessed through Render: [Live Application]().
+---
 
-## Table of Contents
+## Project Setup
 
-- [Summary](#summary)
-- [Technology Used](#technology)
-- [Features](#features)
+Follow the instructions below to get this project up and running on your own machine:
 
-## Summary
+- Run `npm install` to install dependencies.
+- If you would like the front-end application visit my other repository: [Github WeLoveMovies_front-end]().
+- Run `npm test` to run the tests.
 
-This application allows users to see list of movies and a list of movie theaters that are showing those movies, along with all the details of each movie, including reviews.
-
-## Technology Used
-
-### Front-End ( client )
-
-- React.js
-- Javascript
-- Bootstrap 4
-
-### Back-end
-
-- NodeJS
-- PostgreSQL
-- Knex.js
-- Express
-
-### Testing
-
-- Jest
-- Supertest
+---
 
 ## Features
 
-### Home Screen ( Now Showing )
+### Database Tables (migrations):
 
-The home screen of the application shows a list of all movies that are currently playing in theaters. Users are able to click each movie to see details.
+- [ ] create five tables for this project. View the `docs/tables` folder to get more information about each table.
+- [x] Seed data.
 
-![Home Screen](client/public/Images/homescreen.png)
+### Routes:
 
-### Movies Screen ( All Movies )
+- [ ] Create 5 routes
 
-Clicking "All Movies" in the navigation bar brings users to the all movies screen. This screen lists all movies regardless of whether they are currently showing. Clicking on a "See More" button will bring the user to the movie screen of that specific movie.
+### General Tasks:
 
-![All Movies](client/public/Images/allmovies.png)
+- [x] Configure `app.js`
+- [x] Configure `server.js`
+- [x] Create and customize `knexfile.js`
+- [x] Create 4 error connections
+  - [x] asyncErrorBoundary
+  - [x] errorHandler
+  - [x] methodNotAllowed
+  - [x] notFound
+- [x] Create Connection.js
+- [x] Create folder Movies
 
-### Individual Movie ( click see more )
+  - [x] movies.router.js (express)
+  - [x] movies.controller.js (CRUD)
+  - [x] movies.service.js (KNEX)
 
-This will bring you to the individual movie the user clicks on. Listing the runtime, rating, average review, critic reviews and theater options.
-
-![movie](client/public/Images/movie.png)
-
-### All Theaters Screen
-
-Clicking on "All Theaters" in the navigation bar brings users to the all theaters screen. This screen lists all theaters along with a list of movies that are currently playing in that theater. Clicking on a movie will bring the user to the movie screen of that specific movie.
-
-![All Theaters](client/public/Images/alltheaters.png)
+- [x] create folder reviews
+  - [] reviews.service.js
+  - [x] reviews.router.js
+  - [x] reviews.controller.js
